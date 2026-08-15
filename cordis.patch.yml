@@ -1,0 +1,4 @@
+# dsh-aui-render — rich UI tools (ui_render + ui_form)
+- insert:
+    - id: aui-render
+      name: dsh-aui-render
