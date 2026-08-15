@@ -15,34 +15,33 @@ DeepSeek Harness 富 UI 插件：**ui_render**（表格 / 8 种图表 / JSON 树
 | `ui_render` | `kind=table` 交互表格（数字列右对齐、>12 行折叠、悬停全文）；`kind=chart` 8 种图：bar / bar+stacked / line / area / scatter / pie / donut / progress；`kind=json` 可折叠语法着色 JSON 树。卡片右上角 JSON⇄卡片切换。 |
 | `ui_form` | 预填表单（text/number/select/boolean/multiline），确认返回 `{status:"confirmed",values}`，取消返回 `{status:"cancelled"}`；`fields:[]` 即纯确认对话框。用于替代连环提问。 |
 
-## 安装（另一台机器）
+## 安装
 
-### 前提
-- 已安装 `dsh`（≥ 0.1.0-rc.6）和 Node.js
-- 把本目录 `dsh-aui-render/` 拷贝到目标机器（scp / U盘 / git 仓库均可）
-
-### 方式 A：静态插件安装（推荐，随 profile 持久加载）
+### 方式 A · 从 GitHub 安装（推荐）
 
 ```bash
-# 1. 安装到 web profile（dsh plugin 转发 pnpm）
-dsh plugin --profile web add /path/to/dsh-aui-render
+dsh plugin --profile web add github:mabw/dsh-aui-render
+# 等价写法：dsh plugin --profile web add git+https://github.com/mabw/dsh-aui-render.git
 
-# 2. 确认 bundle 已注册：打开 ~/.dsh/profiles/web/package.json，
-#    若 dsh.profile.bundles 数组中还没有 "dsh-aui-render"，手动加上：
-#    "dsh": { "profile": { "bundles": [ ..., "dsh-aui-render" ] } }
+dsh web   # 重启，插件 + skill 一起生效
+```
 
-# 3. 重启
+`dsh plugin add` 安装后会自动把声明了 `dsh.bundle` 的包注册进 profile 的 bundle 列表（无需手动改任何文件），并随 profile 每次启动自动加载。更新用 `dsh plugin --profile web update dsh-aui-render`。
+
+> 本包无构建脚本，git 安装直接成功。若未来版本增加了 prepare 构建脚本且 pnpm 拦截，按 dsh 提示把对应 key 加进 `~/.dsh/profiles/web/pnpm-workspace.yaml` 的 `allowBuilds` 后重跑即可。
+
+### 方式 B · 本地路径安装（离线 / 开发调试）
+
+```bash
+dsh plugin --profile web add /absolute/path/to/dsh-aui-render
+# 相对路径会自动锚定到当前所在目录，写 ./dsh-aui-render 也可以
+
 dsh web
 ```
 
-如果插件在 git 仓库里，第 1 步可直接：
-```bash
-dsh plugin --profile web add git+https://github.com/<you>/dsh-aui-render.git
-```
+### 方式 C · 会话内动态注册（零安装，即用即走）
 
-### 方式 B：会话内动态注册（无需安装，即用即走）
-
-在任意 DSH 会话里让 Agent 执行（源码见 `dynamic/` 目录两个文件，内容原样作为 cordis_define 的 code.host / code.client 参数）：
+先把仓库拉下来（`git clone https://github.com/mabw/dsh-aui-render.git`），然后在任意 DSH 会话里对 Agent 说（源码见 `dynamic/` 目录两个文件，内容原样作为 cordis_define 的 code.host / code.client 参数）：
 
 ```
 请用 cordis_define 定义一个插件：idPrefix 用 aui，
@@ -50,7 +49,7 @@ code.host 取 dynamic/host.js 文件内容，code.client 取 dynamic/client.js �
 然后 cordis_run 激活（浏览器 UI 需要你在 Run 卡片上批准一次）。
 ```
 
-动态版仅存活于当前 DSH 进程，重启后需重新定义；静态版（方式 A）随 profile 每次启动自动加载。
+动态版仅存活于当前 DSH 进程，重启后需重新定义；方式 A/B 随 profile 持久加载。
 
 ## 包结构
 
