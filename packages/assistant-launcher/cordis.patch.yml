@@ -1,0 +1,4 @@
+# dsh-assistant-launcher — composer assistant menu
+- insert:
+    - id: assistant-launcher
+      name: dsh-assistant-launcher
