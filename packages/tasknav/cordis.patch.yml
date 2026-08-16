@@ -1,0 +1,4 @@
+# dsh-tasknav — task tree navigation + decision memory
+- insert:
+    - id: tasknav
+      name: dsh-tasknav
