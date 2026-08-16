@@ -29,6 +29,16 @@ var CSS = `
 .asst-empty{padding:10px 8px;font-size:12px;color:var(--dsw-alias-label-secondary)}
 `;
 
+
+var STYLE_TAG = "dsh-assistant-launcher/launcher.css";
+if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(STYLE_TAG) + "]") === null) {
+	var styleTag = document.createElement("style");
+	styleTag.dataset.plugin = "dsh-assistant-launcher";
+	styleTag.dataset.pluginCss = STYLE_TAG;
+	styleTag.textContent = CSS;
+	document.head.appendChild(styleTag);
+}
+
 var GROUPS = [
 	{
 		group: "工程与运维",
@@ -99,7 +109,7 @@ function Launcher(props) {
 				if (res && res.ok) {
 					if (activeSessions) activeSessions.openSubagent({ parentSessionId: sessionId, childSessionId: res.childId, mode: "continuable" });
 				} else {
-					setErr((res && res.error) || "创建失败");
+					setErr((res && res.error && res.error.message) || "创建失败");
 				}
 			},
 			function (e) { setBusy(""); setErr((e && e.message) || String(e)); }

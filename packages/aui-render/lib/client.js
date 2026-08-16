@@ -554,7 +554,7 @@ function FormCard(props) {
 		if (!conn) { fail("插件未就绪，无法提交"); return; }
 		conn.rpc.call(RPC_CHANNEL, "form-submit", { callId: callId, action: action, values: payload }).then(
 			function (res) {
-				if (res && res.ok === false) fail("提交失败：" + (res.error || "未知错误"));
+				if (res && res.ok === false) fail("提交失败：" + ((res.error && res.error.message) || "未知错误"));
 			},
 			function (e) { fail("提交失败：" + (e && e.message ? e.message : String(e))); }
 		);

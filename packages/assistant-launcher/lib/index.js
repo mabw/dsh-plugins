@@ -38,15 +38,15 @@ function makeSignal() {
 
 function apply(ctx) {
 	ctx.effect(() => ctx.connection.rpc.handle("/assistant-launcher", async (endpoint, payload) => {
-		if (endpoint !== "spawn") return { ok: false, error: `unknown endpoint: ${String(endpoint)}` };
+		if (endpoint !== "spawn") return { ok: false, error: { code: "bad-request", message: `unknown endpoint: ${String(endpoint)}`, details: { issues: [] } } };
 		const req = payload || {};
 		const def = PERSONAS[req.assistant];
-		if (!def) return { ok: false, error: `未知助手：${String(req.assistant)}` };
-		if (typeof req.sessionId !== "string" || req.sessionId === "") return { ok: false, error: "缺少 sessionId" };
+		if (!def) return { ok: false, error: { code: "bad-request", message: `未知助手：${String(req.assistant)}`, details: { issues: [] } } };
+		if (typeof req.sessionId !== "string" || req.sessionId === "") return { ok: false, error: { code: "bad-request", message: "缺少 sessionId", details: { issues: [] } } };
 		const parent = ctx.agents.get(req.sessionId);
-		if (parent === undefined) return { ok: false, error: "父会话不在活动注册表（session 未激活）" };
+		if (parent === undefined) return { ok: false, error: { code: "bad-request", message: "父会话不在活动注册表（session 未激活）", details: { issues: [] } } };
 		const names = ctx.subagents.list();
-		if (!Array.isArray(names) || names.length === 0) return { ok: false, error: "没有已注册的子代理 provider" };
+		if (!Array.isArray(names) || names.length === 0) return { ok: false, error: { code: "bad-request", message: "没有已注册的子代理 provider", details: { issues: [] } } };
 		let lastError;
 		for (const provider of names) {
 			for (const withPersona of [true, false]) {
@@ -67,7 +67,7 @@ function apply(ctx) {
 				}
 			}
 		}
-		return { ok: false, error: `所有 provider 均无法建立可续聊子代理：${lastError?.message ?? String(lastError)}` };
+		return { ok: false, error: { code: "bad-request", message: `所有 provider 均无法建立可续聊子代理：${lastError?.message ?? String(lastError)}`, details: { issues: [] } } };
 	}, { authority: "trusted-host" }));
 }
 

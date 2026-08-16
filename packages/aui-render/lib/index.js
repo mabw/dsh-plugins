@@ -251,13 +251,13 @@ function apply(ctx) {
 	ctx.effect(() => ctx.tools.register(formTool));
 
 	ctx.effect(() => ctx.connection.rpc.handle(RPC_CHANNEL, async (endpoint, payload) => {
-		if (endpoint !== "form-submit") return { ok: false, error: `unknown endpoint: ${String(endpoint)}` };
+		if (endpoint !== "form-submit") return { ok: false, error: { code: "bad-request", message: `unknown endpoint: ${String(endpoint)}`, details: { issues: [] } } };
 		const req = payload || {};
 		const entry = pendingForms.get(req.callId);
-		if (!entry) return { ok: false, error: "表单不存在或已结束" };
+		if (!entry) return { ok: false, error: { code: "bad-request", message: "表单不存在或已结束", details: { issues: [] } } };
 		if (req.action === "confirm") entry.settle({ status: "confirmed", values: req.values || {} });
 		else if (req.action === "cancel") entry.settle({ status: "cancelled" });
-		else return { ok: false, error: "action 必须是 confirm 或 cancel" };
+		else return { ok: false, error: { code: "bad-request", message: "action 必须是 confirm 或 cancel", details: { issues: [] } } };
 		return { ok: true };
 	}, { authority: "trusted-host" }));
 
