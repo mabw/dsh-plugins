@@ -237,7 +237,7 @@ function apply(ctx) {
 		const sid = (payload && payload.sessionId) || "default";
 		const entry = await loadTree(sid);
 		return { ok: true, tree: { root: clone(entry.root), focusId: entry.focusId, count: countNodes(entry.root) } };
-	}));
+	}, { authority: "trusted-host" }));
 
 	ctx.effect(() => ctx.connection.rpc.handle("/tasknav-focus", async (endpoint, payload) => {
 		if (endpoint !== "set") return { ok: false, error: `unknown endpoint: ${String(endpoint)}` };
@@ -253,7 +253,7 @@ function apply(ctx) {
 		entry.focusId = req.taskId;
 		await persist(sid);
 		return { ok: true, tree: { root: clone(entry.root), focusId: entry.focusId, count: countNodes(entry.root) } };
-	}));
+	}, { authority: "trusted-host" }));
 
 	// Anti-forgetting injection: focused task's decision chain enters every step (per agent).
 	ctx.on("agent/pre-step", (payload, next) => {

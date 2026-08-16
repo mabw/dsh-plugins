@@ -68,7 +68,7 @@ function apply(ctx) {
 			}
 		}
 		return { ok: false, error: `所有 provider 均无法建立可续聊子代理：${lastError?.message ?? String(lastError)}` };
-	}));
+	}, { authority: "trusted-host" }));
 }
 
 export { name, inject, apply };

@@ -259,7 +259,7 @@ function apply(ctx) {
 		else if (req.action === "cancel") entry.settle({ status: "cancelled" });
 		else return { ok: false, error: "action 必须是 confirm 或 cancel" };
 		return { ok: true };
-	}));
+	}, { authority: "trusted-host" }));
 
 	ctx.effect(() => () => {
 		for (const entry of pendingForms.values()) entry.fail(new Error("插件已停止，表单作废"));
