@@ -233,26 +233,26 @@ function apply(ctx) {
 	ctx.effect(() => ctx.tools.register(taskTool));
 
 	ctx.effect(() => ctx.connection.rpc.handle("/tasknav", async (endpoint, payload) => {
-		if (endpoint !== "get") return { ok: false, error: `unknown endpoint: ${String(endpoint)}` };
+		if (endpoint !== "get") return { ok: false, error: { code: "bad-request", message: `unknown endpoint: ${String(endpoint)}`, details: { issues: [] } } };
 		const sid = (payload && payload.sessionId) || "default";
 		const entry = await loadTree(sid);
-		return { ok: true, tree: { root: clone(entry.root), focusId: entry.focusId, count: countNodes(entry.root) } };
+		return { ok: true, value: { root: clone(entry.root), focusId: entry.focusId, count: countNodes(entry.root) } };
 	}, { authority: "trusted-host" }));
 
 	ctx.effect(() => ctx.connection.rpc.handle("/tasknav-focus", async (endpoint, payload) => {
-		if (endpoint !== "set") return { ok: false, error: `unknown endpoint: ${String(endpoint)}` };
+		if (endpoint !== "set") return { ok: false, error: { code: "bad-request", message: `unknown endpoint: ${String(endpoint)}`, details: { issues: [] } } };
 		const req = payload || {};
 		const sid = req.sessionId || "default";
 		const entry = await loadTree(sid);
 		if (req.taskId === null || req.taskId === undefined) {
 			entry.focusId = null;
 			await persist(sid);
-			return { ok: true, tree: { root: clone(entry.root), focusId: null, count: countNodes(entry.root) } };
+			return { ok: true, value: { root: clone(entry.root), focusId: null, count: countNodes(entry.root) } };
 		}
-		if (!findNode(entry.root, req.taskId)) return { ok: false, error: `任务不存在：${req.taskId}` };
+		if (!findNode(entry.root, req.taskId)) return { ok: false, error: { code: "not-found", message: `任务不存在：${req.taskId}`, details: { issues: [] } } };
 		entry.focusId = req.taskId;
 		await persist(sid);
-		return { ok: true, tree: { root: clone(entry.root), focusId: entry.focusId, count: countNodes(entry.root) } };
+		return { ok: true, value: { root: clone(entry.root), focusId: entry.focusId, count: countNodes(entry.root) } };
 	}, { authority: "trusted-host" }));
 
 	// Anti-forgetting: the task_tree tool's return value carries a `context`

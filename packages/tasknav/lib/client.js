@@ -128,9 +128,10 @@ function TaskNav(props) {
 				if (!alive) return;
 				if (res && res.ok) {
 					setErr("");
-					var j = JSON.stringify(res.tree);
-					if (j !== lastJson) { lastJson = j; setLoad(res.tree); }
-				} else setErr((res && res.error) || "读取失败");
+					var t = res.value || null;
+					var j = JSON.stringify(t);
+					if (j !== lastJson) { lastJson = j; setLoad(t); }
+				} else setErr((res && res.error && res.error.message) || "读取失败");
 			}, function (e) { if (alive) setErr((e && e.message) || String(e)); });
 		};
 		pull();
@@ -145,7 +146,7 @@ function TaskNav(props) {
 		var conn = activeCtx && activeCtx.connection;
 		if (!conn) return;
 		conn.rpc.call("/tasknav-focus", "set", { sessionId: sessionId, taskId: id }).then(function (res) {
-			if (res && res.ok) { setLoad(res.tree); } else { setErr((res && res.error) || "聚焦失败"); }
+			if (res && res.ok) { setLoad(res.value || null); } else { setErr((res && res.error && res.error.message) || "聚焦失败"); }
 		}, function (e) { setErr((e && e.message) || String(e)); });
 	}
 
@@ -192,6 +193,7 @@ function TaskNav(props) {
 
 function apply(ctx) {
 	activeCtx = ctx;
+
 	ctx.slots.inject("conversation.input.dock", function () {
 		return ctx.slots.register({ name: "conversation.input.dock", id: "tasknav", order: 5 }, function (props) { return h(TaskNav, props); });
 	});
