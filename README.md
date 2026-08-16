@@ -22,7 +22,15 @@ Composer 单按钮溢出菜单：11 个预置身份的助手（运维/研究员/
 dsh plugin --profile web add github:mabw/dsh-plugins/packages/assistant-launcher
 ```
 
-两个插件相互独立，可单独安装；一起安装时助手会话同样拥有卡片渲染能力（工具全局注册）。
+### [tasknav](packages/tasknav) · 任务导航与决策记忆
+
+面向运营工作流的任务树：`task_tree` 工具 + composer 上方**可折叠 dock**（五态徽章、已决策/待决策区分展示、点击聚焦、CLI 记录）；聚焦任务的决策链经 `agent/pre-step` 每步注入——长会话与压缩后不遗忘已定内容；`.tasknav/` 文件持久化，重启不丢。
+
+```bash
+dsh plugin --profile web add github:mabw/dsh-plugins/packages/tasknav
+```
+
+三个插件相互独立，可单独安装；组合安装时助手会话同样拥有卡片渲染能力（工具全局注册）。
 
 ## 安装说明
 
