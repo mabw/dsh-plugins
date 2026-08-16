@@ -30,6 +30,7 @@
     },
     "client": {
       "inject": [
+        "@deepseek-ai/cordis-plugin-timer",
         "@deepseek-ai/dsh-client-connection",
         "@deepseek-ai/dsh-client-ui-conversation",
         "@deepseek-ai/dsh-client-ui-slots"

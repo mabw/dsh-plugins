@@ -255,27 +255,12 @@ function apply(ctx) {
 		return { ok: true, tree: { root: clone(entry.root), focusId: entry.focusId, count: countNodes(entry.root) } };
 	}, { authority: "trusted-host" }));
 
-	// Anti-forgetting injection: focused task's decision chain enters every step (per agent).
-	ctx.on("agent/pre-step", (payload, next) => {
-		const sid = payload?.agent?.id;
-		if (!sid) return next();
-		const entry = TREES.get(sid);
-		if (!entry || !entry.root || !entry.focusId) return next();
-		const focused = findNode(entry.root, entry.focusId);
-		if (!focused) return next();
-		const brief = [
-			`[tasknav 焦点] ${detailOf(focused)}`,
-			`[tasknav 全树]\n${summarizeTree(entry.root, 0)}`,
-			"当前对话围绕焦点任务展开；已列出的决策不可重新发起讨论，除非用户明确要求推翻。",
-		].join("\n\n");
-		const injection = { role: "user", content: [{ type: "text", text: brief }] };
-		return Promise.resolve(next()).then((decision) => {
-			if (decision && decision.kind === "enter" && Array.isArray(decision.messages)) {
-				return { kind: "enter", messages: [...decision.messages, injection] };
-			}
-			return decision;
-		});
-	});
+	// Anti-forgetting: the task_tree tool's return value carries a `context`
+	// field (focused-task details + full-tree summary) on every mutation and
+	// on `tree`, so decision state re-enters context on each tool call. A
+	// pre-step message injection was removed: UserMessage events require the
+	// full wire schema (id/content/source), and a hand-rolled shape crashes
+	// the client conversation assembler on replay.
 }
 
 export { name, inject, apply };
