@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <!-- TARS：三段式收窄的单体机器人（上层带两道眼缝），单路径 evenodd，适合做 CSS mask -->
+  <path fill="#000" fill-rule="evenodd"
+    d="M5 2h14v5.5H5Z M8 4.2h3v1.5H8Z M13 4.2h3v1.5h-3Z M5.5 9h13v5.5h-13Z M6 16h12v5.5H6Z"/>
+</svg>

@@ -1,0 +1,34 @@
+{
+  "name": "dsh-brand-wordmark",
+  "version": "0.1.0",
+  "description": "Rebrand the DeepSeek Harness web sidebar: replace the built-in fish wordmark with a TARS robot SVG logo + custom title (default \"AI原生工作平台\"), covering expanded, collapsed, and narrow-rail states. CSS-only, hash-independent selectors.",
+  "keywords": [
+    "deepseek-harness",
+    "dsh-plugin",
+    "branding",
+    "logo",
+    "sidebar"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": {
+      "default": "./lib/index.js"
+    },
+    "./client": {
+      "default": "./lib/client.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "inject": [],
+      "immediately": true,
+      "platform": "web"
+    }
+  }
+}

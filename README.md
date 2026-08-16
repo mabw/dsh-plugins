@@ -30,7 +30,15 @@ dsh plugin --profile web add github:mabw/dsh-plugins/packages/assistant-launcher
 dsh plugin --profile web add github:mabw/dsh-plugins/packages/tasknav
 ```
 
-三个插件相互独立，可单独安装；组合安装时助手会话同样拥有卡片渲染能力（工具全局注册）。
+### [brand-wordmark](packages/brand-wordmark) · 自定义左上角品牌标识
+
+把 Web 界面左上角的 DeepSeek Harness 原生字标替换为 **TARS 机器人 SVG logo + 自定义文案**（默认「AI原生工作平台」），覆盖侧边栏展开/折叠/窄栏三种状态；纯 CSS 实现、属性子串选择器不随构建哈希漂移，点击行为（新建会话）不变。
+
+```bash
+dsh plugin --profile web add github:mabw/dsh-plugins/packages/brand-wordmark
+```
+
+四个插件相互独立，可单独安装；组合安装时助手会话同样拥有卡片渲染能力（工具全局注册）。
 
 ## 安装说明
 

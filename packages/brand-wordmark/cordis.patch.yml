@@ -1,0 +1,4 @@
+# dsh-brand-wordmark — 自定义左上角品牌标识
+- insert:
+    - id: brand-wordmark
+      name: dsh-brand-wordmark
