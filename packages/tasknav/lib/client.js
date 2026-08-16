@@ -58,6 +58,16 @@ var CSS = `
 .tn-toggle:hover{color:var(--dsw-alias-label-primary);background:var(--dsw-alias-bg-layer-2);border-color:var(--dsw-alias-border-l2)}
 `;
 
+
+var STYLE_TAG = "dsh-tasknav/tasknav.css";
+if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(STYLE_TAG) + "]") === null) {
+	var styleTag = document.createElement("style");
+	styleTag.dataset.plugin = "dsh-tasknav";
+	styleTag.dataset.pluginCss = STYLE_TAG;
+	styleTag.textContent = CSS;
+	document.head.appendChild(styleTag);
+}
+
 var STATUS_META = {
 	pending: { icon: "○", cls: "tn-st-pending", label: "待处理" },
 	active: { icon: "◆", cls: "tn-st-active", label: "进行中" },
