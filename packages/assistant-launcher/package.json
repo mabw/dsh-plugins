@@ -10,6 +10,9 @@
     "launcher"
   ],
   "license": "MIT",
+  "peerDependencies": {
+    "@deepseek-ai/dsh-tools": "*"
+  },
   "type": "module",
   "main": "lib/index.js",
   "exports": {
