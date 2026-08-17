@@ -1,6 +1,6 @@
 {
   "name": "dsh-assistant-launcher",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "One-click continuable subagent launcher for DeepSeek Harness: a composer menu with 11 persona'd assistants (ops, research, audit, ...) that spawn independent-context subagents you can talk to directly.",
   "keywords": [
     "deepseek-harness",
@@ -11,7 +11,7 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@deepseek-ai/dsh-tools": "*"
+    "@deepseek-ai/dsh-tools": "^0.1.0-rc.6"
   },
   "type": "module",
   "main": "lib/index.js",

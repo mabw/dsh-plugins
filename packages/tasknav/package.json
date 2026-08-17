@@ -1,6 +1,6 @@
 {
   "name": "dsh-tasknav",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Task-tree navigation and decision memory for DeepSeek Harness operational workflows: task_tree tool, collapsible dock UI with status/decision badges, click-to-focus topic locking, per-step decision-chain injection (compaction-proof), CLI records, and .tasknav/ file persistence.",
   "keywords": [
     "deepseek-harness",
@@ -11,7 +11,7 @@
   ],
   "license": "MIT",
   "type": "module",
-  "dependencies": {
+  "peerDependencies": {
     "@deepseek-ai/dsh-tools": "^0.1.0-rc.6"
   },
   "main": "lib/index.js",

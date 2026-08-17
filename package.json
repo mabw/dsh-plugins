@@ -4,7 +4,7 @@
   "scripts": {
     "test": "node --check packages/tasknav/lib/index.js && node --check packages/aui-render/lib/index.js && node --check packages/assistant-launcher/lib/index.js && node --check packages/brand-wordmark/lib/index.js && node --check packages/brand-wordmark/lib/client.js"
   },
-  "dependencies": {
-    "@deepseek-ai/dsh-tools": "0.1.0-rc.6"
+  "devDependencies": {
+    "@deepseek-ai/dsh-tools": "^0.1.0-rc.6"
   }
 }

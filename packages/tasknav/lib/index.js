@@ -31,7 +31,15 @@ function registerBundledSkill(ctx) {
 	}
 	readFile(SKILL_PATH, "utf8").then(
 		(raw) => {
-			ctx.effect(() => skills.register({ name: SKILL_NAME, description: SKILL_DESCRIPTION, content: stripFrontmatter(raw) }));
+			ctx.effect(() => skills.register({
+				name: SKILL_NAME,
+				description: SKILL_DESCRIPTION,
+				content: stripFrontmatter(raw),
+				// validateDefinition (dsh-skill get()) requires source/provider/content
+				// to be strings; register() only defaults invocation and provider, so
+				// source must be passed explicitly or the skill loads as undefined.
+				source: "dsh-tasknav",
+			}));
 		},
 		(error) => {
 			console.warn("[dsh-tasknav] bundled skill not registered:", error?.message ?? error);

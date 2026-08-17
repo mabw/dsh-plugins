@@ -41,17 +41,25 @@ if (typeof document !== "undefined" && document.querySelector("style[data-plugin
 
 ## 二、pnpm / 安装链
 
-### 7. 包必须声明运行时依赖
-- `import '@deepseek-ai/dsh-tools'` 却不在 package.json 声明 → pnpm 严格隔离下 **启动 throw ERR_MODULE_NOT_FOUND**
-- 三个包都要 `dependencies: { "@deepseek-ai/dsh-tools": "^0.1.0-rc.6" }`
+### 7. 运行时包声明为 peerDependencies——绝不放 dependencies ⚠️ 2026-08 事故修订
+- **错误姿势**（本条旧版）：`dependencies: { "@deepseek-ai/dsh-tools": "^0.1.0-rc.6" }` → pnpm 去 registry 拉固定副本：另一台机器 registry 缺该 rc 版本直接安装失败；装上了也与运行中的 dsh 版本漂移
+- **正确姿势**（dsh-better-sidebar 同款）：`peerDependencies: { "@deepseek-ai/dsh-tools": "^0.1.0-rc.6" }`
+- **机制**：profile 的 pnpm workspace 是 `nodeLinker: hoisted` + `autoInstallPeers: false`，peer 不安装；dsh 维护 `~/.dsh/profiles/node_modules/` 共享 store（每个包一条软链指向当前 dsh 安装），插件经普通父级查找命中它 → 永远跟随运行中的 dsh 版本
+- 本地 link 开发时 peer 解析走仓库根 `node_modules`（见 #8）
 
 ### 8. 本地路径安装 = symlink → ESM 沿源码路径解析
-- `dsh plugin add ./packages/X` 创建的是指向源码目录的软链；ESM 解析器从**真实路径**向上找 node_modules
-- **修复**：仓库根 `pnpm add @deepseek-ai/dsh-tools`（GitHub 安装无此问题，pnpm 会真克隆进 store）
+- `dsh plugin add ./packages/X` 创建的是指向源码目录的软链；ESM 解析器从**真实路径**向上找 node_modules，够不到 `~/.dsh/profiles/node_modules/` 共享 store
+- **修复**：仓库根声明 `devDependencies: { "@deepseek-ai/dsh-tools": "^0.1.0-rc.6" }` + `pnpm install`（GitHub/file: 安装无此问题，pnpm 会真拷贝进 profile `node_modules`，父级查找即可命中共享 store）
+- **三种规格**：`^0.12.3` / `github:` → 实体拷贝自包含；`file:` → 拷贝（自包含，改动需重跑 add）；`link:` / 裸相对路径 → 软链（位置依赖）
+
+### 8b. 裸相对路径规格会静默装错位置 ⚠️ anchorPathSpec 只认 `.`/`..` 前缀
+- `dsh plugin add dsh-plugins/packages/x`（**不带 `./`**）→ dsh 的 `anchorPathSpec` 只重锚以 `.` 或 `..` 开头的路径，裸路径原样透传给 pnpm，pnpm 把它解析成**相对 profile 目录**（`~/.dsh/profiles/web/dsh-plugins/...`）→ 建出死链
+- pnpm 建软链不要求目标存在 → 安装"成功"、退出码 0，之后 reconcile 逐个解析依赖读 `dsh.bundle` 失败 → 插件**静默不进 bundles**（"装了但没生效"的完整链条）
+- **正确姿势**：本地开发用 `file:./packages/x`（带 `./`，重锚到调用目录）或绝对路径 `file:/abs/path`；远程用 `github:`；永远不用裸相对路径
 
 ### 9. 按包名安装会走 npm registry——先查重名！
 - `dsh plugin add tasknav` 装到了 npm 上**同名第三方包**（无 dsh.bundle → "installed as a plain dependency" 警告）
-- 我们包名带 `dsh-` 前缀：安装永远用**路径或 github: 前缀**
+- 我们包名带 `dsh-` 前缀（发布名 dsh-tasknav / dsh-aui-render / dsh-assistant-launcher / dsh-brand-wordmark）：安装永远用 `file:` 路径或 `github:` 前缀
 
 ### 10. bundle 自动注册
 - 声明 `dsh.bundle` 的包被 `dsh plugin add` 自动加进 profile bundles，**无需手动改 package.json**；无声明的包会警告且不激活
@@ -112,12 +120,14 @@ if (typeof document !== "undefined" && document.querySelector("style[data-plugin
 
 ## 六、Skill / 文档分发
 
-### 21. 插件可捆绑 skill
-- `ctx.skills.register({name, description, content})`（Host apply 内，读包内 SKILL.md 去 frontmatter）
+### 21. 插件可捆绑 skill——但 `source` 字段必须显式传 ⚠️ 注册与加载校验不对称
+- **契约**：`skills.register()` 的 `validateRuntimeSkill` 只查 name/description/invocation，且只默认补 `invocation` 和 `provider` 两字段；加载时 `get()` 的 `validateDefinition` 却要求 `source`/`provider`/`content` 全是字符串
+- **症状**：只传 `{name, description, content}` → 注册成功、目录里也列出，但模型一调 skill 工具真正加载内容就在 `loaded skill "X" source must be a string` 炸掉 →"加载失败"而非"注册失败"（rich-ui-cards / tasknav-workflow 均踩过）
+- **正确姿势**：`ctx.skills.register({name, description, content, source: "<插件包名>"})`（Host apply 内，读包内 SKILL.md 去 frontmatter）；source 惯用短横线标识，内置 provider 用 `"project-dsh"`/`"user-dsh"`/`"bundled"`，运行时注册用插件包名
 - 装了插件就有 skill，停用自动消失；项目级 `.dsh/skills/` 同名 skill 优先级更高
 
 ### 22. 本仓库约定
-- 一仓三包（`packages/*`），独立安装：`dsh plugin --profile web add github:mabw/dsh-plugins/packages/<name>`
+- 一仓四包（`packages/*`：tasknav / aui-render / assistant-launcher / brand-wordmark），独立安装：`dsh plugin --profile web add github:mabw/dsh-plugins/packages/<name>`（本地开发用 `file:./packages/<name>`，见 #8b）
 - 改动后 `node --check` 每个 host 入口 + `new vm.Script()` 校验 client + 本表核查
 - 会话隔离存储：`.tasknav/tree-<sessionId>.json|.md`（dsh 进程 cwd 下）
 

@@ -36,6 +36,10 @@ function registerBundledSkill(ctx) {
 				name: SKILL_NAME,
 				description: SKILL_DESCRIPTION,
 				content: stripFrontmatter(raw),
+				// validateDefinition (dsh-skill get()) requires source/provider/content
+				// to be strings; register() only defaults invocation and provider, so
+				// source must be passed explicitly or the skill loads as undefined.
+				source: "dsh-aui-render",
 			}));
 		},
 		(error) => {

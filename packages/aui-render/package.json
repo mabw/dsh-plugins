@@ -1,6 +1,6 @@
 {
   "name": "dsh-aui-render",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "Rich UI tools for DeepSeek Harness: ui_render (interactive table / 8 chart types / JSON tree cards instead of markdown output), ui_form (prefilled confirm-form that returns values after one click), plus the bundled rich-ui-cards skill that routes structured data to cards.",
   "keywords": [
     "deepseek-harness",
@@ -10,7 +10,7 @@
     "rich-ui"
   ],
   "license": "MIT",
-  "dependencies": {
+  "peerDependencies": {
     "@deepseek-ai/dsh-tools": "^0.1.0-rc.6"
   },
   "type": "module",
